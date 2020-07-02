@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link
+			rel="stylesheet"
+			href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+			integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+			crossorigin="anonymous"
+		/>
+		<title>Document</title>
+	</head>
+	<body>
+		<div class="container">
+			<form action="/login" method="POST">
+				<% /* %> <% if(msg){ %>
+				<label for=""><%= msg %></label>
+				<% } %> <% */ %>
+
+				<div class="form-group">
+					<label for="email-input">Email address</label>
+					<input
+						type="email"
+						class="form-control"
+						id="email-input"
+						aria-describedby="emailHelp"
+						name="email"
+						placeholder="Enter your email"
+						required
+					/>
+				</div>
+				<div class="form-group">
+					<label for="password-input">Password</label>
+					<input
+						type="password"
+						class="form-control"
+						id="password-input"
+						name="password"
+						placeholder="Enter your password"
+						required
+					/>
+				</div>
+
+				<small id="emailHelp" class="form-text text-muted"
+					>Don't have an account?
+					<a href="/register">SignUp</a>
+				</small>
+				<button type="submit" class="btn btn-primary">Submit</button>
+			</form>
+		</div>
+	</body>
+</html>
