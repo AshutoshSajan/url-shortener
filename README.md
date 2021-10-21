@@ -1,2 +1,2 @@
 # URL Shortener
-A simple URL shortner app created using node, sql and postgres
+A simple server side URL shortner app created using node, ejs, sequelize and postgres
