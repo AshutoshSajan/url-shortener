@@ -1,25 +1,55 @@
 const User = require("../model/User");
 
+function fullUrl(req) {
+  return {
+    protocol: req.protocol,
+    host: req.get("host"),
+    pathname: req.originalUrl,
+  };
+}
+
 module.exports = {
+  getAllUsers: (req, res) => {
+    try {
+      User.findAll({ where: {} }, (users, err) => {
+        if (err) {
+          return res.status(500).redirect("/login");
+        } else if (users) {
+          return res.status(200).json({ success: true, users });
+        }
+      });
+    } catch (err) {
+      return res
+        .status(500)
+        .json({ success: false, err: err.message, msg: "server error" });
+    }
+  },
+
   getUser: (req, res) => {
     res.render("login");
   },
 
   loginUser: (req, res) => {
     try {
+      console.log({
+        fullUrl: req.protocol + "://" + req.get("host") + req.originalUrl,
+      });
+
       const { email, passowrd } = req.body;
 
-      User.findOne({ email }, (user, err) => {
+      User.findOne({ where: { email } }, (user, err) => {
         if (err) {
-          return res.status(500).render("/login", { msg: "server error" });
+          return res
+            .status(500)
+            .redirect("/login", { err: err.message, msg: "server error" });
         } else if (user) {
           const match = user.validPassword(passowrd, user.passowrd);
           if (match) {
-            return res.redirect("index");
+            return res.render("home");
           } else if (!match) {
             return res
               .status(200)
-              .render("/login", { msg: "Invalid email or password" });
+              .redirect("/login", { msg: "Invalid email or password" });
           }
         }
       });
@@ -44,6 +74,7 @@ module.exports = {
       };
 
       User.create(newUser, (user, err) => {
+        console.log({ user, err });
         if (err) {
           return res.status(500).redirect("/register", { msg: "server error" });
         } else if (user) {
@@ -72,7 +103,7 @@ module.exports = {
 
       User.update(newUser, (user, err) => {
         if (err) {
-          return res.status(500).render("/", { msg: "server error" });
+          return res.status(500).redirect("/", { msg: "server error" });
         } else if (user) {
           return res.redirect("/");
         }
@@ -88,7 +119,7 @@ module.exports = {
 
       User.destroy({ where: { id } }, (user, err) => {
         if (err) {
-          return res.status(500).render("/register", { msg: "server error" });
+          return res.status(500).redirect("/register", { msg: "server error" });
         } else if (user) {
           return res.redirect("/login");
         }
