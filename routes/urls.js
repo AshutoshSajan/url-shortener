@@ -1,6 +1,7 @@
 var express = require("express");
-var router = express.Router();
 var urlController = require("../controller/urlsController");
+
+var router = express.Router();
 
 router.get("/:id", urlController.getUrl);
 router.post("/", urlController.createUrl);

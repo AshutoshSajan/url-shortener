@@ -19,14 +19,14 @@ var app = express();
 
 // using express session for authentication and authorization
 app.use(
-	session({
-		secret: "keyboard cat",
-		store: new SequelizeStore({
-			db: sequelize,
-		}),
-		resave: false, // we support the touch method so per the express-session docs this should be set to false
-		proxy: true, // if you do SSL outside of node.
-	})
+  session({
+    secret: process.env.SESSION_SECRET,
+    store: new SequelizeStore({
+      db: sequelize,
+    }),
+    resave: false, // we support the touch method so per the express-session docs this should be set to false
+    proxy: true, // if you do SSL outside of node.
+  })
 );
 
 app.use(flash());
@@ -43,45 +43,45 @@ app.use(flash());
 
 // synchronizing the db
 sequelize
-	.sync({
-		logging: console.log,
-		force: true,
-	})
-	.then(async () => {
-		const store = await Store.create({});
+  .sync({
+    logging: console.log,
+    force: true,
+  })
+  .then(async () => {
+    const store = await Store.create({});
 
-		// create admin user
-		User.create({
-			firstName: process.env.ADMIN_NAME,
-			lastName: process.env.ADMIN_LAST_NAME,
-			userName: process.env.ADMIN_USERNAME,
-			phone: process.env.ADMIN_PHONE,
-			email: process.env.ADMIN_EMAIL,
-			password: process.env.ADMIN_PASS,
-		}).then(async (user, err) => {
-			if (user) {
-				console.log(
-					chalk.green.bold(
-						"Connection to database is established successfully..."
-					)
-				);
-				console.log(chalk.blue.bold("Admin user created..."));
-				await Store.update(
-					{ UserId: user.id },
-					{
-						where: {
-							id: store.id,
-						},
-					}
-				);
-			} else if (err) {
-				return console.error(chalk.red.bold("Error creating admin user..."));
-			}
-		});
-	})
-	.catch((err) =>
-		console.error(chalk.red.bold("Unable to connect to the database" + err))
-	);
+    // create admin user
+    User.create({
+      firstName: process.env.ADMIN_NAME,
+      lastName: process.env.ADMIN_LAST_NAME,
+      userName: process.env.ADMIN_USERNAME,
+      phone: process.env.ADMIN_PHONE,
+      email: process.env.ADMIN_EMAIL,
+      password: process.env.ADMIN_PASS,
+    }).then(async (user, err) => {
+      if (user) {
+        console.log(
+          chalk.green.bold(
+            "Connection to database is established successfully..."
+          )
+        );
+        console.log(chalk.blue.bold("Admin user created..."));
+        await Store.update(
+          { UserId: user.id },
+          {
+            where: {
+              id: store.id,
+            },
+          }
+        );
+      } else if (err) {
+        return console.error(chalk.red.bold("Error creating admin user..."));
+      }
+    });
+  })
+  .catch((err) =>
+    console.error(chalk.red.bold("Unable to connect to the database" + err))
+  );
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -94,80 +94,117 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/api/v1/users", (req, res) => {
-	User.findOne({ email: req.body.email }).then((user, err) => {
-		if (user) {
-			res.status(200).json(user);
-		} else if (err) {
-			res.json({ err, msg: "server error" });
-		}
-	});
+  try {
+    User.findOne({ email: req.body.email }).then((user, err) => {
+      if (user) {
+        return res.status(200).json(user);
+      } else if (err) {
+        return res.json({
+          success: false,
+          err: err.message,
+          msg: "server error",
+        });
+      }
+    });
+  } catch (err) {
+    return res.status(500).json({ success: false, msg: "server error" });
+  }
 });
 
 app.use("/api/v1/stores/:id", (req, res) => {
-	const { id } = req.params;
+  try {
+    const { id } = req.params;
 
-	Store.findOne(id, { include: ["UserId"] }).then((store, err) => {
-		if (store) {
-			res.status(200).json(store);
-		} else if (err) {
-			res.json({ err, msg: "server error" });
-		}
-	});
+    Store.findOne(id, { include: ["UserId"] }).then((store, err) => {
+      if (store) {
+        return res.status(200).json(store);
+      } else if (err) {
+        return res.status(500).json({
+          success: false,
+          err: err.message,
+          msg: "server error",
+        });
+      }
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ success: false, err: err.message, msg: "server error" });
+  }
 });
 
 app.use("/", apiRouter);
 
 app.post("/urls", async (req, res) => {
-	let url = {
-		url: req.body.url,
-		slug: req.body.slug,
-	};
+  try {
+    let url = {
+      url: req.body.url,
+      slug: req.body.slug,
+    };
 
-	try {
-		if (!req.body.url.startsWith("https://")) {
-			res.send({ err: "urls http protocol not available" });
-		}
-		const newUrl = await Url.create(url);
-		res.render("home", { msg: "url create", err: "" });
-	} catch (err) {
-		console.log(err.message, "catch err...");
-		res.render("home", { msg: "", err: "url already in use" });
-	}
-});
+    if (!req.body.url.startsWith("https://")) {
+      return res.send({
+        success: false,
+        err: "urls http protocol not available",
+        msg: err.message,
+      });
+    }
 
-app.get("/:slug", (req, res) => {
-	const { slug } = req.params;
-	Url.findOne({ slug }).then((url, err) => {
-		if (err) {
-			res.send({ err, msg: "server error" });
-		} else if (url) {
-			return res.redirect(url.url);
-		}
-	});
+    const newUrl = await Url.create(url);
+    return res.render("home", { msg: "url create", err: "" });
+  } catch (err) {
+    console.log(err.message, "catch err...");
+    return res.render("home", { msg: err.message, err: "url already in use" });
+  }
 });
 
 app.get("/login", (req, res) => {
-	res.render("login");
+  res.render("login");
 });
 
 app.get("/register", (req, res) => {
-	res.render("register");
+  res.render("register");
+});
+
+app.get("/:slug", (req, res) => {
+  try {
+    const { slug } = req.params;
+    Url.findOne({ slug }).then((result, err) => {
+      if (err) {
+        return res.json({
+          success: false,
+          err: err.message,
+          msg: "server error",
+        });
+      } else if (result) {
+        return res.redirect(result.url);
+      }
+    });
+  } catch (err) {
+    return res
+      .status(500)
+      .json({ success: false, err: err.message, msg: "server error" });
+  }
+});
+
+app.get("/*", (req, res) => {
+  res.render("index", { title: "URL Shotener" });
 });
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-	next(createError(404));
+  next(createError(404));
 });
 
 // error handler
 app.use(function (err, req, res, next) {
-	// set locals, only providing error in development
-	res.locals.message = err.message;
-	res.locals.error = req.app.get("env") === "development" ? err : {};
+  // set locals, only providing error in development
+  res.locals.message = err.message;
+  res.locals.error = req.app.get("env") === "development" ? err : {};
 
-	// render the error page
-	res.status(err.status || 500);
-	res.render("error");
+  // render the error page
+  res.status(err.status || 500);
+  return res.render("error");
 });
 
 module.exports = app;
