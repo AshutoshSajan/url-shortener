@@ -13,7 +13,7 @@
 	</head>
 	<body>
 		<div class="container">
-			<form action="/login" method="POST">
+			<form action="/api/v1/users/login" method="POST">
 				<% /* %> <% if(msg){ %>
 				<label for=""><%= msg %></label>
 				<% } %> <% */ %>
@@ -44,7 +44,7 @@
 
 				<small id="emailHelp" class="form-text text-muted"
 					>Don't have an account?
-					<a href="/register">SignUp</a>
+					<a href="/api/v1/users/register">SignUp</a>
 				</small>
 				<button type="submit" class="btn btn-primary">Submit</button>
 			</form>

@@ -87,65 +87,14 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/api/v1/users', (req, res) => {
-  User.findOne({ email: req.body.email }).then((user, err) => {
-    if (user) {
-      res.status(200).json(user);
-    } else if (err) {
-      res.json({ err, msg: 'server error' });
-    }
-  });
+app.use('/api/v1', apiRouter);
+
+app.get('/', (req, res) => {
+  res.render('index', { title: 'URL Shortener' });
 });
 
-app.use('/api/v1/stores/:id', (req, res) => {
-  const { id } = req.params;
-
-  Store.findOne(id, { include: ['UserId'] }).then((store, err) => {
-    if (store) {
-      res.status(200).json(store);
-    } else if (err) {
-      res.json({ err, msg: 'server error' });
-    }
-  });
-});
-
-app.use('/', apiRouter);
-
-app.post('/urls', async (req, res) => {
-  let url = {
-    url: req.body.url,
-    slug: req.body.slug,
-  };
-
-  try {
-    if (!req.body.url.startsWith('https://')) {
-      res.send({ err: 'urls http protocol not available' });
-    }
-    const newUrl = await Url.create(url);
-    res.render('home', { msg: 'url create', err: '' });
-  } catch (err) {
-    console.error(err.message, 'catch err...');
-    res.render('home', { msg: '', err: 'url already in use' });
-  }
-});
-
-app.get('/:slug', (req, res) => {
-  const { slug } = req.params;
-  Url.findOne({ slug }).then((url, err) => {
-    if (err) {
-      res.send({ err, msg: 'server error' });
-    } else if (url) {
-      return res.redirect(url.url);
-    }
-  });
-});
-
-app.get('/login', (req, res) => {
-  res.render('login');
-});
-
-app.get('/register', (req, res) => {
-  res.render('register');
+app.get('*', (req, res) => {
+  res.redirect('/', { title: 'URL Shortener' });
 });
 
 // catch 404 and forward to error handler
