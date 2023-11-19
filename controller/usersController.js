@@ -1,80 +1,103 @@
-const User = require("../model/User");
+const User = require('../model/User');
+const { validPassword } = require('../utils/helpers');
 
 module.exports = {
-	getUser: (req, res) => {
-		res.render("login");
-	},
+  getUserByEmail: (req, res) => {
+    User.findOne({ email: req.body.email }).then((user, err) => {
+      if (user) {
+        res.status(200).json(user);
+      } else if (err) {
+        res.json({ err, msg: 'server error' });
+      }
+    });
+  },
 
-	loginUser: (req, res) => {
-		const { email, passowrd } = req.body;
+  getUser: (req, res) => {},
 
-		User.findOne({ email }, (user, err) => {
-			if (err) {
-				res.status(500).render("/login", { msg: "user not found" });
-			} else if (user) {
-				const match = user.validPassword(passowrd, user.passowrd);
-				if (match) {
-					res.redirect("index");
-				} else if (!match) {
-					res.render("/login", { msg: "Invalid email or password" });
-				}
-			}
-		});
-	},
+  getLoginForm: (req, res) => {
+    return res.render('login');
+  },
 
-	getRegisterUserForm: (req, res) => {
-		res.render("register");
-	},
+  getRegisterUserForm: (req, res) => {
+    return res.render('register');
+  },
 
-	registerUser: (req, res) => {
-		const newUser = {
-			firstName: req.body.first_name,
-			lastName: req.body.last_name,
-			userName: req.body.user_name,
-			email: req.body.email,
-			password: req.body.password,
-		};
+  loginUser: (req, res) => {
+    const { email, password } = req.body;
 
-		User.create(newUser, (user, err) => {
-			if (err) {
-				res.status(500).render("/register", { msg: "user not found" });
-			} else if (user) {
-				res.redirect("/login");
-			}
-		});
-	},
+    User.findOne({ where: { email } })
+      .then((user) => {
+        if (user) {
+          const match = validPassword(password, user.password);
+          if (match) {
+            return res.render('home');
+          } else if (!match) {
+            return res.render('login', { msg: 'Invalid email or password' });
+          }
+        }
 
-	getUpdateUserForm: (req, res) => {
-		res.render("register");
-	},
+        return res.render('login', {
+          msg: 'user not found',
+        });
+      })
+      .catch((err) => {
+        console.error(err);
+        return res.status(500).render('login', { msg: 'user not found' });
+      });
+  },
 
-	updateUser: (req, res) => {
-		const newUser = {
-			firstName: req.body.first_name,
-			lastName: req.body.last_name,
-			userName: req.body.user_name,
-			email: req.body.email,
-			password: req.body.password,
-		};
+  registerUser: (req, res) => {
+    const user = {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      userName: req.body.userName,
+      phone: req.body.phone,
+      email: req.body.email,
+      password: req.body.password,
+    };
 
-		User.update(newUser, (user, err) => {
-			if (err) {
-				res.status(500).render("/", { msg: "user not found" });
-			} else if (user) {
-				res.redirect("/");
-			}
-		});
-	},
+    User.create(user)
+      .then(() => {
+        return res.redirect('/api/v1/users/login');
+      })
+      .catch((err) => {
+        console.error(err);
+        return res.status(500).render('register', { msg: err.message });
+      });
+  },
 
-	deleteUser: (req, res) => {
-		const { id } = req.params;
+  getUpdateUserForm: (req, res) => {
+    res.render('register');
+  },
 
-		User.destroy({ where: { id } }, (user, err) => {
-			if (err) {
-				res.status(500).render("/register", { msg: "user not found" });
-			} else if (user) {
-				res.redirect("/login");
-			}
-		});
-	},
+  updateUser: (req, res) => {
+    const user = {
+      firstName: req.body.firstName,
+      lastName: req.body.lastName,
+      userName: req.body.userName,
+      phone: req.body.phone,
+      email: req.body.email,
+      password: req.body.password,
+    };
+
+    User.update(user, (user, err) => {
+      if (err) {
+        return res.status(500).render('/', { msg: 'user not found' });
+      } else if (user) {
+        return res.redirect('/');
+      }
+    });
+  },
+
+  deleteUser: (req, res) => {
+    const { id } = req.params;
+
+    User.destroy({ where: { id } }, (user, err) => {
+      if (err) {
+        return res.status(500).render('register', { msg: 'user not found' });
+      } else if (user) {
+        return res.redirect('/api/v1/users/login');
+      }
+    });
+  },
 };

@@ -1,22 +1,33 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const Store = require("../model/Store");
+const Store = require('../model/Store');
 
 module.exports = {
-	getStore: (req,res) => {
-		res.send("get store");		
-	},
+  getStoreById: (req, res) => {
+    const { id } = req.params;
 
-	createStore: (req,res) => {
-		res.send("create store");
-	},
+    Store.findOne(id, { include: ['UserId'] }).then((store, err) => {
+      if (store) {
+        res.status(200).json(store);
+      } else if (err) {
+        res.json({ err, msg: 'server error' });
+      }
+    });
+  },
 
-	updateStore: (req, res) => {
-		res.send("update store");
-	},
+  getStores: (req, res) => {
+    return res.send('get store');
+  },
 
-	deleteStore: (req,res) => {
-		res.send("delete store");
-	}
+  createStore: (req, res) => {
+    return res.send('create store');
+  },
 
+  updateStore: (req, res) => {
+    return res.send('update store');
+  },
+
+  deleteStore: (req, res) => {
+    return res.send('delete store');
+  },
 };
