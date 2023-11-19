@@ -30,7 +30,7 @@ module.exports = {
         if (user) {
           const match = validPassword(password, user.password);
           if (match) {
-            return res.render('home');
+            return res.render('home', { err: '', msg: '' });
           } else if (!match) {
             return res.render('login', { msg: 'Invalid email or password' });
           }
