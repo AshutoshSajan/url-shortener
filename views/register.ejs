@@ -1,113 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link
-			rel="stylesheet"
-			href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-			integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
-			crossorigin="anonymous"
-		/>
-		<title>Document</title>
-	</head>
-	<body>
-		<div class="container">
-			<form action="/api/v1/users/register" method="POST">
-				<% /* %> <% if(msg){ %>
-				<label for=""><%= msg %></label>
-				<% } %> <% */ %>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+      integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk"
+      crossorigin="anonymous"
+    />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="container">
+      <form action="/api/v1/users/register" method="POST">
+        <% /* %> <% if(msg){ %>
+        <label for=""><%= msg %></label>
+        <% } %> <% */ %>
 
-				<div class="form-group">
-					<label for="first-name">First Name</label>
-					<input
-						type="text"
-						class="form-control"
-						name="firstName"
-						id="first-name"
-						placeholder="Enter your first Name"
-						required
-					/>
-				</div>
+        <div class="form-group">
+          <label for="first-name">First Name</label>
+          <input
+            type="text"
+            class="form-control"
+            name="firstName"
+            id="first-name"
+            placeholder="Enter your first Name"
+            required
+          />
+        </div>
 
-				<div class="form-group">
-					<label for="last-name">Last Name</label>
-					<input
-						type="text"
-						class="form-control"
-						name="lastName"
-						id="last-name"
-						placeholder="Enter your last Name"
-						required
-					/>
-				</div>
+        <div class="form-group">
+          <label for="last-name">Last Name</label>
+          <input
+            type="text"
+            class="form-control"
+            name="lastName"
+            id="last-name"
+            placeholder="Enter your last Name"
+            required
+          />
+        </div>
 
-				<div class="form-group">
-					<label for="username">Username</label>
-					<input
-						type="text"
-						class="form-control"
-						name="userName"
-						id="username"
-						placeholder="Enter your username"
-						required
-					/>
-				</div>
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input
+            type="text"
+            class="form-control"
+            name="userName"
+            id="username"
+            placeholder="Enter your username"
+            required
+          />
+        </div>
 
-				<div class="form-group">
-					<label for="phone">Phone Number</label>
-					<input
-						type="text"
-						class="form-control"
-						name="phone"
-						id="phone"
-						placeholder="Enter your phone number"
-						required
-					/>
-				</div>
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input
+            type="text"
+            class="form-control"
+            name="phone"
+            id="phone"
+            placeholder="Enter your phone number"
+            required
+          />
+        </div>
 
-				<div class="form-group">
-					<label for="email-input">Email address</label>
-					<input
-						type="email"
-						class="form-control"
-						id="email-input"
-						aria-describedby="emailHelp"
-						name="email"
-						placeholder="Enter your email"
-						required
-					/>
-				</div>
-				<div class="form-group">
-					<label for="password-input">Password</label>
-					<input
-						type="password"
-						class="form-control"
-						id="password-input"
-						name="password"
-						placeholder="Enter your password"
-						required
-					/>
-				</div>
+        <div class="form-group">
+          <label for="email-input">Email address</label>
+          <input
+            type="email"
+            class="form-control"
+            id="email-input"
+            aria-describedby="emailHelp"
+            name="email"
+            placeholder="Enter your email"
+            required
+          />
+        </div>
+        <div class="form-group">
+          <label for="password-input">Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="password-input"
+            name="password"
+            placeholder="Enter your password"
+            required
+          />
+        </div>
 
-				<div class="form-group">
-					<label for="confirm-password">Confirm Password</label>
-					<input
-						type="password"
-						class="form-control"
-						id="confirm-password"
-						name="confirmPassword"
-						placeholder="Confirm password"
-						required
-					/>
-				</div>
+        <div class="form-group">
+          <label for="confirm-password">Confirm Password</label>
+          <input
+            type="password"
+            class="form-control"
+            id="confirm-password"
+            name="confirmPassword"
+            placeholder="Confirm password"
+            required
+          />
+        </div>
 
-				<small id="emailHelp" class="form-text text-muted"
-					>Already have an account?
-					<a href="/api/v1/users/login">SignIn</a>
-				</small>
-				<button type="submit" class="btn btn-primary">Submit</button>
-			</form>
-		</div>
-	</body>
+        <small id="emailHelp" class="form-text text-muted"
+          >Already have an account?
+          <a href="/api/v1/users/login">SignIn</a>
+        </small>
+        <button type="submit" class="btn btn-primary">Submit</button>
+      </form>
+    </div>
+  </body>
 </html>
